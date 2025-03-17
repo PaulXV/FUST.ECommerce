@@ -1,0 +1,110 @@
+﻿@page "/admin/users"
+
+@inject FUST.E_Commerce.Services.UserDataAccess UserDataAccess
+
+
+<h3>Users Page</h3>
+
+@if (users == null)
+{
+    <p>Loading...</p>
+}
+else if (!users.Any())
+{
+    <p>No users found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>UserName</th>
+                <th>Email</th>
+                <th>PhoneNumber</th>
+                <th>EmailConfirmed</th>
+                <th>TwoFactorEnabled</th>
+                <th>LockoutEnabled</th>
+                <th>Actions</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.UserName</td>
+                    <td>@user.Email</td>
+                    <td>@user.PhoneNumber</td>
+                    <td>@user.EmailConfirmed</td>
+                    <td>@user.TwoFactorEnabled</td>
+                    <td>@user.LockoutEnabled</td>
+                    <td>
+                        <button type="button" @onclick="() => EditUser(user.Id)">Edit</button>
+                    </td>
+                    
+                  
+                    
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (editingUser != null)
+{
+    <EditForm Model="editingUser" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label for="UserName">UserName:</label>
+            <InputText id="UserName" @bind-Value="editingUser.UserName" />
+        </div>
+        <div>
+            <label for="PhoneNumber">PhoneNumber:</label>
+            <InputText id="PhoneNumber" @bind-Value="editingUser.PhoneNumber" />
+        </div>
+        <button type="submit">Save</button>
+        <button type="button" @onclick="CancelEdit">Cancel</button>
+    </EditForm>
+}
+else
+{
+    <p>null</p>
+}
+
+
+@code {
+    private IEnumerable<FUST.E_Commerce.Models.User>? users;
+    private FUST.E_Commerce.Models.User? editingUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await Task.Run(() => UserDataAccess.GetUsers());
+    }
+
+    private void EditUser(string id)
+    { 
+        editingUser = users?.FirstOrDefault(user => user.Id == id);
+
+      
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (editingUser != null)
+        {
+            await Task.Run(() => UserDataAccess.UpdateUser(editingUser));
+            users = await Task.Run(() => UserDataAccess.GetUsers());
+            editingUser = null;
+        }
+    }
+
+    private void CancelEdit()
+    {
+        editingUser = null;
+    }
+    
+}
