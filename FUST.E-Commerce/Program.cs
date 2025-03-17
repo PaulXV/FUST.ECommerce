@@ -15,6 +15,8 @@ builder.Services.AddRazorComponents()
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddScoped<UserDataAccess>();
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddSingleton<IProductsDataAccess, ProductsDataAccess>();
 builder.Services.AddSingleton<ICategoryDataAccess, CategoryDataAccess>();
