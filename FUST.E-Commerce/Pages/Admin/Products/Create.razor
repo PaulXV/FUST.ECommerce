@@ -30,7 +30,7 @@
         <InputNumber id="categoryId" @bind-Value="product.CategoryID" />
     </div>
 
-    <button type="button" class="btn btn-danger" @onclick="() => NavigationManager.NavigateTo("/Admin/Products")">Cancel</button>
+    <button type="button" class="btn btn-danger" @onclick="() => GoBack()">Cancel</button>
     <button type="submit">Save</button>
 </EditForm>
 
@@ -42,4 +42,9 @@
         ProductDataAccess.AddProduct(product!);
         NavigationManager.NavigateTo("/Admin/Products");
     }
+
+	private void GoBack()
+	{
+		NavigationManager.NavigateTo("/Admin/Products");
+	}
 }

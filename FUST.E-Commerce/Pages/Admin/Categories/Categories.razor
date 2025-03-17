@@ -23,8 +23,8 @@
                 <td>@category.CategoryID</td>
                 <td>@category.Name</td>
                 <td>
-                    <button class="btn btn-warning" @onclick="() => EditCategory(category.categoryID)">Edit</button>
-                    <button class="btn btn-danger" @onclick="() => DeleteCategory(category.categoryID)">Delete</button>
+                    <button class="btn btn-warning" @onclick="() => EditCategory(category.CategoryID)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteCategory(category.CategoryID)">Delete</button>
                 </td>
             </tr>
         }
@@ -41,12 +41,12 @@
 
     private void CreateCategory()
     {
-        NavigationManager.NavigateTo("/Admin/Category/Create");
+        NavigationManager.NavigateTo("/Admin/Categories/Create");
     }
 
     private void EditCategory(int categoryId)
     {
-        NavigationManager.NavigateTo($"/Admin/Category/Edit/" + categoryId);
+        NavigationManager.NavigateTo($"/Admin/Categories/Edit/" + categoryId);
     }
 
     private void DeleteCategory(int categoryId)
