@@ -1,0 +1,38 @@
+﻿@page "/Admin/Categories/Create"
+
+@inject NavigationManager NavigationManager
+@inject ICategoryDataAccess CategoryDataAccess
+
+<h3>Create Categories</h3>
+
+<EditForm Model="category" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label for="categoryId">Category ID:</label>
+        <InputNumber id="categoryId" @bind-Value="category.CategoryID" />
+    </div>
+    <div>
+        <label for="name">Name:</label>
+        <InputText id="name" @bind-Value="category.Name" />
+    </div>
+
+    <button type="button" class="btn btn-danger" @onclick="() => GoBack()">Cancel</button>
+    <button type="submit">Save</button>
+</EditForm>
+
+@code {
+    private Category? category = new Category();
+
+    private void HandleValidSubmit()
+    {
+        CategoryDataAccess.AddCategory(category!);
+        NavigationManager.NavigateTo("/Admin/Categories");
+    }
+
+	private void GoBack()
+	{
+		NavigationManager.NavigateTo("/Admin/Categories");
+	}
+}

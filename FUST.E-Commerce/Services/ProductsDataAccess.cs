@@ -10,7 +10,7 @@ public class ProductsDataAccess : IProductsDataAccess
 
     public ProductsDataAccess(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("testdotnet") ?? throw new Exception("ConnectionString 'testdotnet' not found.");
+        _connectionString = configuration.GetConnectionString("e-commerce") ?? throw new Exception("ConnectionString 'e-commerce' not found.");
     }
 
     public IEnumerable<Product> GetProducts()

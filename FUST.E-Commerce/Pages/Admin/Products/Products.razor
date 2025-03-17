@@ -1,0 +1,60 @@
+@page "/Admin/Products"
+@inject NavigationManager NavigationManager
+@inject IProductsDataAccess ProductDataAccess
+
+<h3>Products</h3>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="CreateProduct">Create New Product</button>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in prods)
+        {
+            <tr>
+                <td>@product.ProductID</td>
+                <td>@product.Name</td>
+                <td>@product.Price</td>
+                <td>
+                    <button class="btn btn-warning" @onclick="() => EditProduct(product.ProductID)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteProduct(product.ProductID)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private IEnumerable<Product> prods = [];
+
+    protected override void OnInitialized()
+    {
+        prods = ProductDataAccess.GetProducts();
+    }
+
+    private void CreateProduct()
+    {
+        NavigationManager.NavigateTo("/Admin/Products/Create");
+    }
+
+    private void EditProduct(int productId)
+    {
+        NavigationManager.NavigateTo($"/Admin/Products/Edit/" + productId);
+    }
+
+    private void DeleteProduct(int productId)
+    {
+        ProductDataAccess.DeleteProduct(productId);
+        prods = ProductDataAccess.GetProducts();
+    }
+
+}

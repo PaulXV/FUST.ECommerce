@@ -1,0 +1,58 @@
+@page "/Admin/Categories"
+
+@inject NavigationManager NavigationManager
+@inject ICategoryDataAccess CategoryDataAccess
+
+<h3>Categories</h3>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="CreateCategory">Create New Category</button>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Category ID</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in cats)
+        {
+            <tr>
+                <td>@category.CategoryID</td>
+                <td>@category.Name</td>
+                <td>
+                    <button class="btn btn-warning" @onclick="() => EditCategory(category.categoryID)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteCategory(category.categoryID)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private IEnumerable<Category> cats = [];
+
+    protected override void OnInitialized()
+    {
+        cats = CategoryDataAccess.GetCategories();
+    }
+
+    private void CreateCategory()
+    {
+        NavigationManager.NavigateTo("/Admin/Category/Create");
+    }
+
+    private void EditCategory(int categoryId)
+    {
+        NavigationManager.NavigateTo($"/Admin/Category/Edit/" + categoryId);
+    }
+
+    private void DeleteCategory(int categoryId)
+    {
+        CategoryDataAccess.DeleteCategory(categoryId);
+        cats = CategoryDataAccess.GetCategories();
+    }
+
+}
