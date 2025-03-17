@@ -6,6 +6,5 @@ namespace FUST.E_Commerce.Services
     {
         IEnumerable<Category> GetCategories();
         void AddCategory(Category category);
-        IEnumerable<Product> GetProductsByCategory(int categoryId);
     }
 }

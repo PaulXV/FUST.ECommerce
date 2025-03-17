@@ -43,29 +43,4 @@ public class CategoryDataAccess : ICategoryDataAccess
         connection.Execute(query, category);
     }
 
-    public IEnumerable<Product> GetProductsByCategory(int categoryId)
-    {
-        try
-        {
-            using var connection = new MySqlConnection(_connectionString);
-            const string query = """
-                SELECT 
-                    productID, 
-                    productCode, 
-                    name,
-                    quantity,
-                    price,
-                    categoryID
-                FROM products
-                WHERE categoryID = @categoryId
-                """;
-            return connection.Query<Product>(query, new { categoryId });
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return Enumerable.Empty<Product>();
-        }
-    }
-
 }
