@@ -4,6 +4,10 @@
 
 <h3>Products</h3>
 
+<div class="d-flex justify-content-center mb-3">
+    <InputFile OnChange="HandleFileSelected" class="form-control" accept=".csv" />
+</div>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -59,6 +63,61 @@
     {
         ProductDataAccess.DeleteProduct(productId);
         products = ProductDataAccess.GetProducts();
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var file = e.File;
+            if (file != null)
+            {
+                using var stream = file.OpenReadStream();
+                using var reader = new StreamReader(stream);
+
+                string? line;
+                bool isHeader = true;
+
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    if (isHeader)
+                    {
+                        isHeader = false;
+                        continue;
+                    }
+
+                    var values = line.Split(',');
+
+                    if (values.Length == 6 &&
+                        int.TryParse(values[0], out int productId) &&
+                        !string.IsNullOrWhiteSpace(values[1]) &&
+                        !string.IsNullOrWhiteSpace(values[2]) &&
+                        int.TryParse(values[3], out int quantity) &&
+                        double.TryParse(values[4], out double price) &&
+                        int.TryParse(values[5], out int categoryId))
+                    {
+                        var product = new Product
+                            {
+                                ProductID = productId,
+                                ProductCode = values[1].Trim(),
+                                Name = values[2].Trim(),
+                                Quantity = quantity,
+                                Price = price,
+                                CategoryID = categoryId
+                            };
+
+                        ProductDataAccess.AddProduct(product);
+                    }
+                }
+
+                // Aggiorna la lista dopo l'inserimento
+                products = ProductDataAccess.GetProducts();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Errore nella lettura del file: {ex.Message}");
+        }
     }
 
 }

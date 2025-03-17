@@ -4,9 +4,13 @@
 @inject NavigationManager NavigationManager
 @inject ICategoryDataAccess CategoryDataAccess
 
-<h3>Categories</h3>
+<h3 class="text-center my-4">Categories</h3>
 
-<table class="table table-striped">
+<div class="d-flex justify-content-center mb-3">
+    <InputFile OnChange="HandleFileSelected" class="form-control" accept=".csv" />
+</div>
+
+<table class="table table-striped table-bordered">
     <thead>
         <tr>
             <th>Category ID</th>
@@ -21,24 +25,32 @@
                 <td>@category.CategoryID</td>
                 <td>@category.Name</td>
                 <td>
-                    <button class="btn btn-warning" @onclick="() => EditCategory(category.CategoryID)">Edit</button>
-                    <button class="btn btn-danger" @onclick="() => DeleteCategory(category.CategoryID)">Delete</button>
+                    <button class="btn btn-warning btn-sm" @onclick="() => EditCategory(category.CategoryID)">Edit</button>
+                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteCategory(category.CategoryID)">Delete</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<div class="mb-3">
+<div class="d-flex justify-content-center mt-3">
     <button class="btn btn-primary" @onclick="CreateCategory">Create New Category</button>
 </div>
 
 @code {
     private IEnumerable<Category> categories = [];
+    private string? errorMessage;
 
     protected override void OnInitialized()
     {
-        categories = CategoryDataAccess.GetCategories();
+        try
+        {
+            categories = CategoryDataAccess.GetCategories();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
     }
 
     private void CreateCategory()
@@ -53,7 +65,62 @@
 
     private void DeleteCategory(int categoryId)
     {
-        CategoryDataAccess.DeleteCategory(categoryId);
-        categories = CategoryDataAccess.GetCategories();
+        try
+        {
+            CategoryDataAccess.DeleteCategory(categoryId);
+            categories = CategoryDataAccess.GetCategories();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
     }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var file = e.File;
+            if (file != null)
+            {
+                using var stream = file.OpenReadStream();
+                using var reader = new StreamReader(stream);
+
+                string? line;
+                bool isHeader = true;
+
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    if (isHeader)
+                    {
+                        isHeader = false;
+                        continue;
+                    }
+
+                    var values = line.Split(',');
+
+                    if (values.Length == 2 &&
+                        int.TryParse(values[0], out int categoryId) &&
+                        !string.IsNullOrWhiteSpace(values[1]))
+                    {
+                        var category = new Category
+                            {
+                                CategoryID = categoryId,
+                                Name = values[1].Trim()
+                            };
+
+                        // Inserisce nel database
+                        CategoryDataAccess.AddCategory(category);
+                    }
+                }
+
+                categories = CategoryDataAccess.GetCategories();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Errore nella lettura del file: {ex.Message}");
+        }
+    }
+
 }
