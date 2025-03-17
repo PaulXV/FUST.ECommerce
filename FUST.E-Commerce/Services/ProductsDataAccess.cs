@@ -10,7 +10,7 @@ public class ProductsDataAccess : IProductsDataAccess
 
     public ProductsDataAccess(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("testdotnet") ?? throw new Exception("ConnectionString 'testdotnet' not found.");
+        _connectionString = configuration.GetConnectionString("e-commerce") ?? throw new Exception("ConnectionString 'e-commerce' not found.");
     }
 
     public IEnumerable<Product> GetProducts()
@@ -90,6 +90,31 @@ public class ProductsDataAccess : IProductsDataAccess
             """;
         var rowsAffected = connection.Execute(query, new { productID });
         return rowsAffected;
+    }
+
+    public IEnumerable<Product> GetProductsByCategory(int categoryId)
+    {
+        try
+        {
+            using var connection = new MySqlConnection(_connectionString);
+            const string query = """
+                SELECT 
+                    productID, 
+                    productCode, 
+                    name,
+                    quantity,
+                    price,
+                    categoryID
+                FROM products
+                WHERE categoryID = @categoryId
+                """;
+            return connection.Query<Product>(query, new { categoryId });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Enumerable.Empty<Product>();
+        }
     }
 
 }
