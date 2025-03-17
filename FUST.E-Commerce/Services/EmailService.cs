@@ -13,7 +13,7 @@ namespace FUST.E_Commerce.Services
             message.To.Add(new MailboxAddress("", toEmail));
             message.Subject = subject;
 
-            message.Body = new TextPart("plain")
+            message.Body = new TextPart("html")
             {
                 Text = body
             };
