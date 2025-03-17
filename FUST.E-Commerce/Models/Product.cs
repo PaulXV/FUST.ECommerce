@@ -1,4 +1,4 @@
-﻿namespace Brugnola.FUST.TestDotNet.Models;
+﻿namespace FUST.E_Commerce.Models;
 
 public class Product
 {

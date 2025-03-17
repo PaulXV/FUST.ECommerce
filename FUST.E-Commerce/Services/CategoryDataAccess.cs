@@ -1,8 +1,8 @@
-﻿using Brugnola.FUST.TestDotNet.Models;
+﻿using FUST.E_Commerce.Models;
 using MySqlConnector;
 using Dapper;
 
-namespace Brugnola.FUST.TestDotNet.Services;
+namespace FUST.E_Commerce.Services;
 
 public class CategoryDataAccess : ICategoryDataAccess
 {

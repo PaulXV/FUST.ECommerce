@@ -1,6 +1,6 @@
-﻿using Brugnola.FUST.TestDotNet.Models;
+﻿using FUST.E_Commerce.Models;
 
-namespace Brugnola.FUST.TestDotNet.Services
+namespace FUST.E_Commerce.Services
 {
     public interface ICategoryDataAccess
     {

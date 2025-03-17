@@ -1,6 +1,6 @@
-﻿namespace Brugnola.FUST.TestDotNet.Services;
+﻿namespace FUST.E_Commerce.Services;
 
-using Brugnola.FUST.TestDotNet.Models;
+using FUST.E_Commerce.Models;
 using Dapper;
 using MySqlConnector;
 
