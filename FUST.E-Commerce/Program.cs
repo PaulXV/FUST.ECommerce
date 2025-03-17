@@ -5,6 +5,7 @@ using FUST.E_Commerce.Components;
 using FUST.E_Commerce.Components.Account;
 using FUST.E_Commerce.Data;
 using FUST.E_Commerce.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +39,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityEmailSender>();
+builder.Services.AddSingleton<IEmailSender, EmailService>();
 
 var app = builder.Build();
 

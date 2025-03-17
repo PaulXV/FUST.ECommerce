@@ -1,30 +1,38 @@
 ﻿using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using MimeKit;
-using System.Threading.Tasks;
 
-namespace FUST.E_Commerce.Services
+namespace FUST.E_Commerce.Services;
+public class EmailService : IEmailSender
 {
-    public class EmailService
+    private readonly IConfiguration _configuration;
+
+    public EmailService(IConfiguration configuration)
     {
-        public async Task SendEmailAsync(string toEmail, string subject, string body)
+        this._configuration = configuration;
+    }
+
+    public async Task SendEmailAsync(string toEmail, string subject, string body)
+    {
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress("Your Company", "andrea.monico.24@itsaltoadriatico.it"));
+        message.To.Add(new MailboxAddress("", toEmail));
+        message.Subject = subject;
+
+        message.Body = new TextPart("html")
         {
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Your Company", "andrea.monico.24@itsaltoadriatico.it"));
-            message.To.Add(new MailboxAddress("", toEmail));
-            message.Subject = subject;
+            Text = body
+        };
 
-            message.Body = new TextPart("html")
-            {
-                Text = body
-            };
+        using (var client = new SmtpClient())
+        {
+            var email = _configuration["Email"];
+            var password = _configuration["Password"];
 
-            using (var client = new SmtpClient())
-            {
-                await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                await client.AuthenticateAsync("andrea.monico.24@stud.itsaltoadriatico.it", "zacwuqbtufmkoijd");
-                await client.SendAsync(message);
-                await client.DisconnectAsync(true);
-            }
+            await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(email, password);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
         }
     }
 }
