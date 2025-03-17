@@ -4,26 +4,26 @@
 
 <h3>Products</h3>
 
-<div class="mb-3">
-    <button class="btn btn-primary" @onclick="CreateProduct">Create New Product</button>
-</div>
-
 <table class="table table-striped">
     <thead>
         <tr>
             <th>Product ID</th>
+            <th>Product Code</th>
             <th>Name</th>
+            <th>Quantity</th>
             <th>Price</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var product in prods)
+        @foreach (var product in products)
         {
             <tr>
                 <td>@product.ProductID</td>
+                <td>@product.ProductCode</td>
                 <td>@product.Name</td>
-                <td>@product.Price</td>
+                <td>@product.Quantity</td>
+                <td>@product.Price €</td>
                 <td>
                     <button class="btn btn-warning" @onclick="() => EditProduct(product.ProductID)">Edit</button>
                     <button class="btn btn-danger" @onclick="() => DeleteProduct(product.ProductID)">Delete</button>
@@ -33,12 +33,16 @@
     </tbody>
 </table>
 
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="CreateProduct">Create New Product</button>
+</div>
+
 @code {
-    private IEnumerable<Product> prods = [];
+    private IEnumerable<Product> products = [];
 
     protected override void OnInitialized()
     {
-        prods = ProductDataAccess.GetProducts();
+        products = ProductDataAccess.GetProducts();
     }
 
     private void CreateProduct()
@@ -54,7 +58,7 @@
     private void DeleteProduct(int productId)
     {
         ProductDataAccess.DeleteProduct(productId);
-        prods = ProductDataAccess.GetProducts();
+        products = ProductDataAccess.GetProducts();
     }
 
 }

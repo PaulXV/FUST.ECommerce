@@ -1,6 +1,7 @@
-﻿@page "/Admin/Products/Edit/{ProductId}"
+﻿@page "/Admin/Products/Edit/{ProductId:int}"
 @inject NavigationManager NavigationManager
 @inject IProductsDataAccess ProductDataAccess
+@inject ICategoryDataAccess CategoryDataAccess
 
 <h3>Edit Product</h3>
 
@@ -16,7 +17,7 @@ else
 
         <div>
             <label for="productCode">ProductCode:</label>
-            <InputText id="productCode" @bind-Value="product.ProductCode" />
+            <InputText id="productCode" @bind-Value="product.ProductCode"/>
         </div>
         <div>
             <label for="name">Name:</label>
@@ -36,7 +37,7 @@ else
         </div>
 
         <button type="button" class="btn btn-danger" @onclick="() => GoBack()">Cancel</button>
-        <button type="submit">Save</button>
+        <button type="submit" class="btn btn-success">Save</button>
     </EditForm>
 }
 
@@ -50,6 +51,17 @@ else
 
     private void HandleValidSubmit()
     {
+        if(product!.ProductCode.Length > 3)
+		{
+			product.ProductCode = product.ProductCode.Substring(0, 3);
+		}
+
+		Category? category = CategoryDataAccess.GetCategory(product.CategoryID);
+        if(category == null)
+		{
+			product.CategoryID = 1;
+		}
+
         ProductDataAccess.UpdateProduct(product!);
         NavigationManager.NavigateTo("/Admin/Products");
     }

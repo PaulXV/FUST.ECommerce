@@ -2,6 +2,7 @@
 
 @inject NavigationManager NavigationManager
 @inject IProductsDataAccess ProductDataAccess
+@inject ICategoryDataAccess CategoryDataAccess
 
 <h3>Create Product</h3>
 
@@ -39,6 +40,17 @@
 
     private void HandleValidSubmit()
     {
+        if (product!.ProductCode.Length > 3)
+        {
+            product.ProductCode = product.ProductCode.Substring(0, 3);
+        }
+
+        Category? category = CategoryDataAccess.GetCategory(product.CategoryID);
+        if (category == null)
+        {
+            product.CategoryID = 1;
+        }
+
         ProductDataAccess.AddProduct(product!);
         NavigationManager.NavigateTo("/Admin/Products");
     }

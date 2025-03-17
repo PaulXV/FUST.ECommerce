@@ -50,20 +50,20 @@ public class CategoryDataAccess : ICategoryDataAccess
     {
         using var connection = new MySqlConnection(_connectionString);
         const string query = """
-            INSERT INTO categories (name)
-            VALUES (@name)
+            INSERT INTO categories (categoryID, name)
+            VALUES (@CategoryID, @Name)
             """;
         connection.Execute(query, category);
     }
 
-    public void DeleteCategory(Category category)
+    public void DeleteCategory(int categoryID)
     {
         using var connection = new MySqlConnection(_connectionString);
         const string query = """
             DELETE FROM categories
             WHERE categoryID = @categoryID
             """;
-        connection.Execute(query, category);
+        connection.Execute(query, new { categoryID });
     }
 
     public void UpdateCategory(Category category)
@@ -71,8 +71,8 @@ public class CategoryDataAccess : ICategoryDataAccess
         using var connection = new MySqlConnection(_connectionString);
         const string query = """
             UPDATE categories
-            SET name = @name
-            WHERE categoryID = @categoryID
+            SET name = @Name
+            WHERE categoryID = @CategoryID
             """;
         connection.Execute(query, category);
     }

@@ -10,25 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Pages\Admin - Copy\**" />
-    <Compile Remove="Pages\NewFolder\**" />
-    <Content Remove="Pages\Admin - Copy\**" />
-    <Content Remove="Pages\NewFolder\**" />
-    <EmbeddedResource Remove="Pages\Admin - Copy\**" />
-    <EmbeddedResource Remove="Pages\NewFolder\**" />
-    <None Remove="Pages\Admin - Copy\**" />
-    <None Remove="Pages\NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="Pages\Admin\Categories\Categories.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Pages\Admin\Categories\Categories.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.3" />

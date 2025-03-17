@@ -23,11 +23,11 @@
 </EditForm>
 
 @code {
-    private Category? category = new Category();
+    private Category category = new Category();
 
     private void HandleValidSubmit()
     {
-        CategoryDataAccess.AddCategory(category!);
+        CategoryDataAccess.AddCategory(category);
         NavigationManager.NavigateTo("/Admin/Categories");
     }
 

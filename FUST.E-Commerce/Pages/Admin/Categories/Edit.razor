@@ -1,4 +1,4 @@
-﻿@page "/Admin/Categories/Edit/{CategoryId}"
+﻿@page "/Admin/Categories/Edit/{CategoryId:int}"
 @inject NavigationManager NavigationManager
 @inject ICategoryDataAccess CategoryDataAccess
 
@@ -24,7 +24,7 @@ else
         </div>
 
         <button type="button" class="btn btn-danger" @onclick="() => GoBack()">Cancel</button>
-        <button type="submit">Save</button>
+        <button type="submit" class="btn btn-success">Save</button>
     </EditForm>
 }
 
@@ -38,8 +38,8 @@ else
 
     private void HandleValidSubmit()
     {
-        CategoryDataAccess.UpdateCategory(category!);
-        NavigationManager.NavigateTo("/Admin/Categories");
+		CategoryDataAccess.UpdateCategory(category!);
+		NavigationManager.NavigateTo("/Admin/Categories");	
     }
 
     private void GoBack()
