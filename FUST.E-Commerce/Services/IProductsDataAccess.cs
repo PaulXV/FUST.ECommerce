@@ -9,5 +9,5 @@ public interface IProductsDataAccess
     void AddProduct(Product product);
     int UpdateProduct( Product product);
     int DeleteProduct(int productID);
-
+    IEnumerable<Product> GetProductsByCategory(int categoryId);
 }

@@ -1,0 +1,49 @@
+﻿@page "/Admin/Categories/Edit/{CategoryId:int}"
+@inject NavigationManager NavigationManager
+@inject ICategoryDataAccess CategoryDataAccess
+
+<h3>Edit Category</h3>
+
+@if (category == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="category" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label for="categoryId">Category ID:</label>
+            <InputNumber id="categoryId" @bind-Value="category.CategoryID" />
+        </div>
+        <div>
+            <label for="name">Name:</label>
+            <InputText id="name" @bind-Value="category.Name" />
+        </div>
+
+        <button type="button" class="btn btn-danger" @onclick="() => GoBack()">Cancel</button>
+        <button type="submit" class="btn btn-success">Save</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int CategoryId { get; set; }
+
+    private Category? category;
+
+    protected override void OnInitialized() => category = CategoryDataAccess.GetCategory(CategoryId);
+
+    private void HandleValidSubmit()
+    {
+		CategoryDataAccess.UpdateCategory(category!);
+		NavigationManager.NavigateTo("/Admin/Categories");	
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/Admin/Categories");
+    }
+}

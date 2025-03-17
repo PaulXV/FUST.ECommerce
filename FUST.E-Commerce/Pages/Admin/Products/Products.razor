@@ -1,0 +1,123 @@
+@page "/Admin/Products"
+@inject NavigationManager NavigationManager
+@inject IProductsDataAccess ProductDataAccess
+
+<h3>Products</h3>
+
+<div class="d-flex justify-content-center mb-3">
+    <InputFile OnChange="HandleFileSelected" class="form-control" accept=".csv" />
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>Product Code</th>
+            <th>Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in products)
+        {
+            <tr>
+                <td>@product.ProductID</td>
+                <td>@product.ProductCode</td>
+                <td>@product.Name</td>
+                <td>@product.Quantity</td>
+                <td>@product.Price €</td>
+                <td>
+                    <button class="btn btn-warning" @onclick="() => EditProduct(product.ProductID)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteProduct(product.ProductID)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="CreateProduct">Create New Product</button>
+</div>
+
+@code {
+    private IEnumerable<Product> products = [];
+
+    protected override void OnInitialized()
+    {
+        products = ProductDataAccess.GetProducts();
+    }
+
+    private void CreateProduct()
+    {
+        NavigationManager.NavigateTo("/Admin/Products/Create");
+    }
+
+    private void EditProduct(int productId)
+    {
+        NavigationManager.NavigateTo($"/Admin/Products/Edit/" + productId);
+    }
+
+    private void DeleteProduct(int productId)
+    {
+        ProductDataAccess.DeleteProduct(productId);
+        products = ProductDataAccess.GetProducts();
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var file = e.File;
+            if (file != null)
+            {
+                using var stream = file.OpenReadStream();
+                using var reader = new StreamReader(stream);
+
+                string? line;
+                bool isHeader = true;
+
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    if (isHeader)
+                    {
+                        isHeader = false;
+                        continue;
+                    }
+
+                    var values = line.Split(',');
+
+                    if (values.Length == 6 &&
+                        int.TryParse(values[0], out int productId) &&
+                        !string.IsNullOrWhiteSpace(values[1]) &&
+                        !string.IsNullOrWhiteSpace(values[2]) &&
+                        int.TryParse(values[3], out int quantity) &&
+                        double.TryParse(values[4], out double price) &&
+                        int.TryParse(values[5], out int categoryId))
+                    {
+                        var product = new Product
+                            {
+                                ProductID = productId,
+                                ProductCode = values[1].Trim(),
+                                Name = values[2].Trim(),
+                                Quantity = quantity,
+                                Price = price,
+                                CategoryID = categoryId
+                            };
+
+                        ProductDataAccess.AddProduct(product);
+                    }
+                }
+
+                // Aggiorna la lista dopo l'inserimento
+                products = ProductDataAccess.GetProducts();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Errore nella lettura del file: {ex.Message}");
+        }
+    }
+
+}

@@ -1,0 +1,126 @@
+@page "/Admin/Categories"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Data.SqlClient
+@inject NavigationManager NavigationManager
+@inject ICategoryDataAccess CategoryDataAccess
+
+<h3 class="text-center my-4">Categories</h3>
+
+<div class="d-flex justify-content-center mb-3">
+    <InputFile OnChange="HandleFileSelected" class="form-control" accept=".csv" />
+</div>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Category ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in categories)
+        {
+            <tr>
+                <td>@category.CategoryID</td>
+                <td>@category.Name</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => EditCategory(category.CategoryID)">Edit</button>
+                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteCategory(category.CategoryID)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-center mt-3">
+    <button class="btn btn-primary" @onclick="CreateCategory">Create New Category</button>
+</div>
+
+@code {
+    private IEnumerable<Category> categories = [];
+    private string? errorMessage;
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            categories = CategoryDataAccess.GetCategories();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private void CreateCategory()
+    {
+        NavigationManager.NavigateTo("/Admin/Categories/Create");
+    }
+
+    private void EditCategory(int categoryId)
+    {
+        NavigationManager.NavigateTo($"/Admin/Categories/Edit/" + categoryId);
+    }
+
+    private void DeleteCategory(int categoryId)
+    {
+        try
+        {
+            CategoryDataAccess.DeleteCategory(categoryId);
+            categories = CategoryDataAccess.GetCategories();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var file = e.File;
+            if (file != null)
+            {
+                using var stream = file.OpenReadStream();
+                using var reader = new StreamReader(stream);
+
+                string? line;
+                bool isHeader = true;
+
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    if (isHeader)
+                    {
+                        isHeader = false;
+                        continue;
+                    }
+
+                    var values = line.Split(',');
+
+                    if (values.Length == 2 &&
+                        int.TryParse(values[0], out int categoryId) &&
+                        !string.IsNullOrWhiteSpace(values[1]))
+                    {
+                        var category = new Category
+                            {
+                                CategoryID = categoryId,
+                                Name = values[1].Trim()
+                            };
+
+                        // Inserisce nel database
+                        CategoryDataAccess.AddCategory(category);
+                    }
+                }
+
+                categories = CategoryDataAccess.GetCategories();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Errore nella lettura del file: {ex.Message}");
+        }
+    }
+
+}

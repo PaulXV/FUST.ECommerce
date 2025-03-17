@@ -1,0 +1,4 @@
+productID, productCode, name, quantity, price, categoryID
+4, abc, ciaoo, 123, 12.6, 3
+5, bca, gaming, 1234, 60.0, 4
+6, az, amazon, 4334, 3.99, 6

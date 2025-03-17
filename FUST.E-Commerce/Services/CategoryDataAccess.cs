@@ -10,7 +10,7 @@ public class CategoryDataAccess : ICategoryDataAccess
 
     public CategoryDataAccess(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("testdotnet") ?? throw new Exception("ConnectionString 'testdotnet' not found.");
+        _connectionString = configuration.GetConnectionString("e-commerce") ?? throw new Exception("ConnectionString 'e-commerce' not found.");
     }
 
     public IEnumerable<Category> GetCategories()
@@ -33,39 +33,48 @@ public class CategoryDataAccess : ICategoryDataAccess
         }
     }
 
+    public Category? GetCategory(int categoryID)
+    {
+        using var connection = new MySqlConnection(_connectionString);
+        const string query = """
+            SELECT 
+                categoryID, 
+                name
+            FROM categories
+            WHERE categoryID = @categoryID
+            """;
+        return connection.QueryFirstOrDefault<Category>(query, new { categoryID });
+    }
+
     public void AddCategory(Category category)
     {
         using var connection = new MySqlConnection(_connectionString);
         const string query = """
-            INSERT INTO categories (name)
-            VALUES (@name)
+            INSERT INTO categories (categoryID, name)
+            VALUES (@CategoryID, @Name)
             """;
         connection.Execute(query, category);
     }
 
-    public IEnumerable<Product> GetProductsByCategory(int categoryId)
+    public void DeleteCategory(int categoryID)
     {
-        try
-        {
-            using var connection = new MySqlConnection(_connectionString);
-            const string query = """
-                SELECT 
-                    productID, 
-                    productCode, 
-                    name,
-                    quantity,
-                    price,
-                    categoryID
-                FROM products
-                WHERE categoryID = @categoryId
-                """;
-            return connection.Query<Product>(query, new { categoryId });
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return Enumerable.Empty<Product>();
-        }
+        using var connection = new MySqlConnection(_connectionString);
+        const string query = """
+            DELETE FROM categories
+            WHERE categoryID = @categoryID
+            """;
+        connection.Execute(query, new { categoryID });
+    }
+
+    public void UpdateCategory(Category category)
+    {
+        using var connection = new MySqlConnection(_connectionString);
+        const string query = """
+            UPDATE categories
+            SET name = @Name
+            WHERE categoryID = @CategoryID
+            """;
+        connection.Execute(query, category);
     }
 
 }
